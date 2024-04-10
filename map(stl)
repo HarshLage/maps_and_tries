@@ -1,0 +1,27 @@
+#include <iostream>
+#include<unordered_map>
+using namespace std;
+
+int main() {
+  unordered_map<string,int>mp;
+
+  pair<string,int>p = make_pair("harsh",01);
+  pair<string,int>p2("vivek",23);
+  mp["vedant"] = 43;
+
+  mp.insert(p);
+  mp.insert(p2);
+
+  cout<<mp.size()<<endl;
+
+  cout<<mp.at("vedant")<<endl;
+  cout<<mp.count("love")<<endl;
+
+  if(mp.find("harsh")!=mp.end()){
+    cout<<"found it"<<endl;
+  }
+  else{
+    cout<<"not found it "<<endl;
+  }
+  return 0;
+}
