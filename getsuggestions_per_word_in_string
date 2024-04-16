@@ -1,0 +1,191 @@
+#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+
+class TrieNode{
+  public:
+  int val;
+  vector<TrieNode*>children;
+  bool isTerminal;
+
+  TrieNode(int val){
+    this->val = val;
+    children.resize(26);
+    for(int i=0;i<26;i++){
+      children[i] = NULL;
+    }
+    this->isTerminal = false;
+  }
+  
+
+};
+void insert(TrieNode * root , string word){
+  // cout<<"word is :"<<word<<endl;
+  if(word.size()==0){
+      root->isTerminal = true;
+      return;
+  }
+
+  char ch = word[0];
+  int index = ch - 'a';
+  TrieNode * child;
+
+  if(root->children[index]!=NULL){
+       child = root->children[index];   
+  }
+  else{
+      child = new TrieNode(ch);
+      root->children[index]=child;
+
+  }
+  insert(child,word.substr(1));
+}
+bool searchWord(TrieNode * root , string word){
+  if(word.length()==0){
+    return root->isTerminal;
+  }
+
+  char ch = word[0];
+  int index = ch - 'a';
+  TrieNode * child;
+  if(root->children[index]!=NULL){
+       child = root -> children[index];
+  }
+  else{
+    return false;
+  }
+  bool answer = searchWord(child,word.substr(1));
+  return answer;
+
+}
+void deletion(TrieNode * root , string word){
+  if(word.length()==0){
+    root->isTerminal = false;
+    return;
+  }
+
+  char ch = word[0];
+  int index = ch - 'a';
+  TrieNode * child;
+  if(root->children[index]!=NULL){
+    child = root->children[index];
+  }
+  else{
+    return;
+  }
+  deletion(child,word.substr(1));
+}
+void helper(TrieNode * root , vector<string>&answer , string &input , string &prefix ){
+   if(root->isTerminal==true){
+    answer.push_back(prefix + input);
+   }
+
+   for(char ch = 'a';ch<='z';ch++){
+      int index = ch - 'a';
+      TrieNode * temp = root->children[index];
+      if(temp!=NULL){
+        //storing the  element
+        input.push_back(ch);
+        
+        //funtion call
+        helper(temp,answer,input,prefix);
+
+        input.pop_back();
+
+      }
+   }
+}
+void findAllsuggestions(TrieNode * root , vector<string>&answer , string input , string prefix){
+  if(input.length()==0){
+    TrieNode * lastchar = root;
+    helper(lastchar , answer,input,prefix);
+    return;
+  }
+
+  char ch = input[0];
+  int index = ch - 'a';
+  TrieNode * child;
+  if(root->children[index]!=NULL){
+    child = root->children[index];
+  }
+  else{
+    return;
+  }
+  findAllsuggestions(child,answer,input.substr(1),prefix);
+
+
+}  
+vector<vector<string>> getsuggestionsforstring(TrieNode * root , string input ){
+  TrieNode * prev = root;
+  vector<vector<string>>output;
+  string inputHelper = "";
+
+
+  for(int i=0;i<input.size();i++){
+    char lastchar = input[i];
+    int index = lastchar - 'a';
+
+    TrieNode * curr = prev->children[index];
+
+    if(curr == NULL){
+      break;
+    }
+
+    else{
+      vector<string>NicheKans;
+      inputHelper.push_back(lastchar);
+      string dummy = "";
+      helper(curr , NicheKans , inputHelper , dummy);
+      output.push_back(NicheKans);
+      prev = curr;
+    }
+
+  }
+  return output;
+}
+int main() {
+  TrieNode * root = new TrieNode('_');
+  string word = "love";
+  insert(root,word);
+  insert(root,"cater");
+  insert(root,"care");
+  insert(root,"cdm");
+  insert(root,"lover");
+  insert(root,"load");
+  insert(root,"bat");
+  insert(root,"car");
+  insert(root,"cat");
+
+  // if(searchWord(root,"love")){
+  //   cout<<"found"<<endl;
+  // }
+  // else{
+  //   cout<<"not found"<<endl;
+  // }
+
+  // deletion(root,"love");
+
+  // if(searchWord(root,"love")){
+  //   cout<<"found"<<endl;
+  // }
+  // else{
+  //   cout<<"not found"<<endl;
+  // }
+  vector<string>answer;
+  string input = "loa";
+  string prefix = "";
+  // findAllsuggestions(root,answer,input,prefix);
+  
+ 
+  // for(auto i : answer){
+  //   cout<<i<<" ";
+  // }cout<<end;
+  vector<vector<string>>output = getsuggestionsforstring(root,input);
+  for(int i=0;i<output.size();i++){
+    cout<<i<<"->";
+    for(auto str: output[i]){
+      cout<<str<<" ";
+    }cout<<endl;
+  }
+
+}
