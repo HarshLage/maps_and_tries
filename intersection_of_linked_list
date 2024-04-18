@@ -1,0 +1,17 @@
+  ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode * answer = NULL;
+        unordered_map<ListNode*,bool>mp;
+        while(headA!=NULL){
+            mp[headA] = true;
+            headA = headA->next;
+        }
+        while(headB!=NULL){
+            if(mp[headB]==true){
+                answer = headB;
+                break;
+            }
+            mp[headB] = true;
+            headB = headB->next;
+        }
+        return answer;
+    }
