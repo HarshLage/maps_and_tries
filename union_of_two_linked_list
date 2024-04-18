@@ -1,0 +1,37 @@
+struct Node* makeUnion(struct Node* head1, struct Node* head2)
+    {
+       map<int,int>mp;
+       Node * temp = head1;
+       while(temp!=NULL){
+           if(mp[temp->data]==0){
+           mp[temp->data]++;
+           }
+           temp = temp->next;
+       }
+       Node * temp1 = head2;
+       while(temp1!=NULL)
+       {
+           if(mp[temp1->data]==0){
+               mp[temp1->data]++;
+           }
+           temp1 = temp1->next;
+       }
+       Node * answer = NULL;
+       Node * tempo = NULL;
+       for(auto i : mp){
+           int a = i.first;
+           if(answer==NULL){
+               
+               answer = new Node(a);
+               tempo = answer;
+           }
+           else{
+               Node * newNode = new Node(a);
+               answer -> next = newNode;
+               answer = newNode;
+           }
+           
+       }
+       answer = tempo;
+       return answer;
+    }
