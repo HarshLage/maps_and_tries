@@ -1,0 +1,137 @@
+class TrieNode{
+    public:
+    char val;
+    vector<TrieNode*>children;
+    int  LastIndex;
+    TrieNode(char val){
+        this->val = val;
+        children.resize(26);
+        for(int i=0;i<26;i++){
+            children[i] = NULL;
+        }
+        this->LastIndex = -1;
+    }
+};
+class Trie {
+public:
+    TrieNode * root = NULL;
+    void insetUtil(TrieNode * root , string &word , int i,int end_I){
+        if(i>=word.size()){
+            root->LastIndex = end_I;
+            return;
+        }
+        int index = word[i] - 'a';
+        if(!root->children[index]){
+            root->children[index] = new TrieNode(word[i]);
+        }
+
+        insetUtil(root->children[index] , word,i+1,end_I);
+
+    }
+
+    bool startUtil(TrieNode * root , string &word , int i){
+        if(i>=word.size()){
+            return true;
+        }
+        int index = word[i] - 'a';
+        if(root->children[index]){
+            return startUtil(root->children[index],word,i+1);
+        }
+        return false;
+    }
+    Trie() {
+        root = new TrieNode('_');
+    }
+    
+    void insert(string word,int end_I) {
+        insetUtil(root,word,0,end_I);
+    }
+    bool inPalindrome(string & word , int s , int e){
+        while(s<=e){
+            if(word[s]!=word[e]) return false ;
+            s++;
+            e--;
+        }
+        return true;
+    }
+     void searchCon2(TrieNode * curr , vector<int>&ispalli , string s){
+     
+        if(curr->LastIndex!=-1){
+            if( inPalindrome(s,0,s.size()-1)){
+                ispalli.push_back(curr->LastIndex);
+            }
+        }
+
+        for(int i=0;i<26;i++){
+            if(curr->children[i]!=NULL){
+                s.push_back(i + 'a');
+                searchCon2(curr->children[i],ispalli,s);
+                s.pop_back();
+            }
+        }
+        
+     }
+    void search(string &word,vector<int>&ispalli) {
+      TrieNode * curr = root;
+      for(int i=0;i<word.size();i++){
+
+        int index = word[i] - 'a';
+        
+        if(curr-> LastIndex!=-1){
+             if( inPalindrome(word,i,word.size()-1)){
+                ispalli.push_back(curr->LastIndex);
+             }
+        }
+
+        if(curr->children[index]){
+            curr = curr->children[index];
+        }
+        else{
+            return;
+        }
+          
+      }
+
+    searchCon2(curr,ispalli,"");
+
+    }
+    
+    bool startsWith(string prefix) {
+        bool ans = startUtil(root,prefix,0);
+        return ans;
+    }
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
+class Solution {
+public:
+    vector<vector<int>> palindromePairs(vector<string>& words) {
+        vector<vector<int>>answer;
+        Trie trie;
+        for(int i=0;i<words.size();i++){
+            auto reverseWord = words[i];
+            reverse(reverseWord.begin(),reverseWord.end());
+            trie.insert(reverseWord,i);
+        }
+
+        for(int i=0;i<words.size();i++){
+           
+            vector<int>temp;//for storing the each of the pallindromes mathches with that index
+            
+            trie.search(words[i],temp);
+
+            for(auto it : temp){
+                if(it!=i){
+                answer.push_back({i,it});
+                }
+            }
+        }
+        return answer;
+    }
+};
